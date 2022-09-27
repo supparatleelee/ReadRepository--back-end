@@ -1,0 +1,10 @@
+exports.WANT_TO_READ_BOOK = 'WANT_TO_READ';
+exports.CURRENTLY_READING_BOOK = 'CURRENTLY_READING';
+exports.READ_BOOK = 'READ';
+
+exports.READER = 'READER';
+exports.AUTHOR = 'AUTHOR';
+exports.ADMIN = 'ADMIN';
+
+exports.FRIEND_ACCEPTED = 'ACCEPTED';
+exports.FRIEND_PENDING = 'PENDING';
