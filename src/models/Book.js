@@ -2,21 +2,8 @@ module.exports = (sequelize, DataTypes) => {
   const Book = sequelize.define(
     'Book',
     {
-      bookName: {
+      bookOlid: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
-      },
-      description: {
-        type: DataTypes.TEXT('long'),
-        validate: {
-          notEmpty: true,
-        },
-      },
-      publishYear: {
-        type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
           notEmpty: true,
@@ -63,14 +50,14 @@ module.exports = (sequelize, DataTypes) => {
       onUpdate: 'RESTRICT',
     });
 
-    Book.belongsTo(db.Author, {
-      foreignKey: {
-        name: 'authorId',
-        allowNull: false,
-      },
-      onDelete: 'RESTRICT',
-      onUpdate: 'RESTRICT',
-    });
+    // Book.belongsTo(db.Author, {
+    //   foreignKey: {
+    //     name: 'authorId',
+    //     allowNull: false,
+    //   },
+    //   onDelete: 'RESTRICT',
+    //   onUpdate: 'RESTRICT',
+    // });
   };
 
   return Book;

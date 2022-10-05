@@ -15,16 +15,16 @@ module.exports = (sequelize, DataTypes) => {
     { underscored: true }
   );
 
-  Author.associate = (db) => {
-    Author.hasMany(db.Book, {
-      foreignKey: {
-        name: 'authorId',
-        allowNull: false,
-      },
-      onDelete: 'RESTRICT',
-      onUpdate: 'RESTRICT',
-    });
-  };
+  // Author.associate = (db) => {
+  //   Author.hasMany(db.Book, {
+  //     foreignKey: {
+  //       name: 'authorId',
+  //       allowNull: false,
+  //     },
+  //     onDelete: 'RESTRICT',
+  //     onUpdate: 'RESTRICT',
+  //   });
+  // };
 
   return Author;
 };
