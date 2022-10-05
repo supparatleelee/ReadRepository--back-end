@@ -7,7 +7,29 @@ exports.showBookInfo = async (req, res, next) => {
     const bookInfo = await axios.get(
       `https://openlibrary.org/works/${olid}.json`
     );
-    console.log(bookInfo);
+
+    const existBookOlid = await Book.findOne({
+      where: { bookOlid: olid },
+    });
+
+    if (existBookOlid) {
+      const isAddedBookToList = await UserCollection.findOne({
+        where: { userId: req.user.id, bookId: existBookOlid.id },
+        atrributes: { exclude: 'userId' },
+        include: [
+          { model: User, attributes: { exclude: 'password' } },
+          { model: Book },
+        ],
+      });
+
+      return res
+        .status(200)
+        .json({
+          bookInfo: bookInfo.data,
+          bookStatus: isAddedBookToList.bookStatus,
+        });
+    }
+
     res.status(200).json({ bookInfo: bookInfo.data });
   } catch (err) {
     next(err);
