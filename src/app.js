@@ -9,6 +9,7 @@ const morgan = require('morgan');
 const authRoute = require('./routes/authRoute');
 const searchRoute = require('./routes/searchRoute');
 const bookRoute = require('./routes/bookRoute');
+const profileRoute = require('./routes/profileRoute');
 
 const notFound = require('./middlewares/notFound');
 const error = require('./middlewares/error');
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/auth', authRoute);
 app.use('/search', searchRoute);
 app.use('/book', authenticate, bookRoute);
+app.use('/profile', authenticate, profileRoute);
 
 app.use(notFound);
 app.use(error);
