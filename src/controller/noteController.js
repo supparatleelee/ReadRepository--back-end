@@ -1,4 +1,5 @@
 const { UserNote, Book, User } = require('../models');
+const AppError = require('../utility/appError');
 
 exports.createNote = async (req, res, next) => {
   try {
@@ -19,31 +20,6 @@ exports.createNote = async (req, res, next) => {
 
       const note = await UserNote.findOne({
         where: { id: newNote.id },
-        atrributes: { exclude: 'userId' },
-        include: [
-          { model: User, attributes: { exclude: 'password' } },
-          { model: Book },
-        ],
-      });
-
-      return res.status(201).json({ note });
-    }
-
-    const existUserNote = await UserNote.findOne({
-      where: {
-        userId: req.user.id,
-        bookId: existBookOlid.id,
-      },
-    });
-
-    if (existUserNote) {
-      await UserNote.update(
-        { note: noteContent },
-        { where: { id: existUserNote.id } }
-      );
-
-      const note = await UserNote.findOne({
-        where: { id: existUserNote.id },
         atrributes: { exclude: 'userId' },
         include: [
           { model: User, attributes: { exclude: 'password' } },
@@ -101,6 +77,55 @@ exports.deleteNote = async (req, res, next) => {
     res
       .status(200)
       .json({ message: 'success delete user note with this book' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.updateNote = async (req, res, next) => {
+  try {
+    const { noteContent } = req.body;
+
+    const existBookOlid = await Book.findOne({
+      where: { bookOlid: req.params.olid },
+    });
+
+    if (!existBookOlid) {
+      throw new AppError(
+        'Cannot edit this book as there is no book in database. Please create your note before editing',
+        400
+      );
+    }
+
+    const existUserNote = await UserNote.findOne({
+      where: {
+        userId: req.user.id,
+        bookId: existBookOlid.id,
+      },
+    });
+
+    if (!existUserNote) {
+      throw new AppError(
+        'Cannot edit this book as you have not create a note yet. Please create your note before editing',
+        400
+      );
+    }
+
+    await UserNote.update(
+      { note: noteContent },
+      { where: { id: existUserNote.id } }
+    );
+
+    const note = await UserNote.findOne({
+      where: { id: existUserNote.id },
+      atrributes: { exclude: 'userId' },
+      include: [
+        { model: User, attributes: { exclude: 'password' } },
+        { model: Book },
+      ],
+    });
+
+    res.status(201).json({ note });
   } catch (err) {
     next(err);
   }

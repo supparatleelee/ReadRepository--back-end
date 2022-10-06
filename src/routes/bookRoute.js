@@ -11,5 +11,6 @@ router.post('/:olid/addToList', bookController.addBookToList);
 
 router.post('/:olid/note', noteController.createNote);
 router.delete('/:olid/note', noteController.deleteNote);
+router.patch('/:olid/note', noteController.updateNote);
 
 module.exports = router;
