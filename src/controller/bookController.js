@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { User, Book, UserCollection } = require('../models');
+const { User, Book, UserCollection, UserNote } = require('../models');
 
 exports.showBookInfo = async (req, res, next) => {
   try {
@@ -22,12 +22,40 @@ exports.showBookInfo = async (req, res, next) => {
         ],
       });
 
-      return res
-        .status(200)
-        .json({
+      const isCreatedNote = await UserNote.findOne({
+        where: {
+          userId: req.user.id,
+          bookId: existBookOlid.id,
+        },
+        atrributes: { exclude: 'userId' },
+        include: [
+          { model: User, attributes: { exclude: 'password' } },
+          { model: Book },
+        ],
+      });
+
+      if (isAddedBookToList && !isCreatedNote) {
+        return res.status(200).json({
           bookInfo: bookInfo.data,
           bookStatus: isAddedBookToList.bookStatus,
         });
+      }
+
+      if (isCreatedNote && !isAddedBookToList) {
+        return res
+          .status(200)
+          .json({ bookInfo: bookInfo.data, userNote: isCreatedNote.note });
+      }
+
+      if (isAddedBookToList && isCreatedNote) {
+        return res
+          .status(200)
+          .json({
+            bookInfo: bookInfo.data,
+            bookStatus: isAddedBookToList.bookStatus,
+            userNote: isCreatedNote.note,
+          });
+      }
     }
 
     res.status(200).json({ bookInfo: bookInfo.data });
