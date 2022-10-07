@@ -1,4 +1,5 @@
 const axios = require('axios');
+const AppError = require('../utility/appError');
 const { User, Book, UserCollection, UserNote } = require('../models');
 
 exports.showBookInfo = async (req, res, next) => {
@@ -48,13 +49,11 @@ exports.showBookInfo = async (req, res, next) => {
       }
 
       if (isAddedBookToList && isCreatedNote) {
-        return res
-          .status(200)
-          .json({
-            bookInfo: bookInfo.data,
-            bookStatus: isAddedBookToList.bookStatus,
-            userNote: isCreatedNote.note,
-          });
+        return res.status(200).json({
+          bookInfo: bookInfo.data,
+          bookStatus: isAddedBookToList.bookStatus,
+          userNote: isCreatedNote.note,
+        });
       }
     }
 
@@ -133,6 +132,45 @@ exports.addBookToList = async (req, res, next) => {
     });
 
     res.status(201).json({ bookCollection });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteAddToList = async (req, res, next) => {
+  try {
+    const existOlid = await Book.findOne({
+      where: { bookOlid: req.params.olid },
+    });
+
+    if (!existOlid) {
+      throw new AppError(
+        'Cannot delete this book from your list as there is no such book',
+        400
+      );
+    }
+
+    const existBookCollectionRecord = await UserCollection.findOne({
+      where: {
+        userId: req.user.id,
+        bookId: existOlid.id,
+      },
+    });
+
+    if (!existBookCollectionRecord) {
+      throw new AppError(
+        "You haven't add this book to your collection yet",
+        400
+      );
+    }
+
+    await UserCollection.destroy({
+      where: { id: existBookCollectionRecord.id },
+    });
+
+    res
+      .status(200)
+      .json({ message: 'success delete this book from your collection' });
   } catch (err) {
     next(err);
   }

@@ -8,6 +8,7 @@ const router = express.Router();
 router.post('/:olid', bookController.showBookInfo);
 
 router.post('/:olid/addToList', bookController.addBookToList);
+router.delete('/:olid/deleteFromList', bookController.deleteAddToList);
 
 router.post('/:olid/note', noteController.createNote);
 router.delete('/:olid/note', noteController.deleteNote);
