@@ -23,14 +23,12 @@ exports.getAllUserCollection = async (req, res, next) => {
 
     const totalCollection = allUserCollection.length;
 
-    res
-      .status(200)
-      .json({
-        getAllUserCollection: [
-          { total: totalCollection },
-          { collectionLists: allUserCollection },
-        ],
-      });
+    res.status(200).json({
+      getAllUserCollection: [
+        { total: totalCollection },
+        { collectionLists: allUserCollection },
+      ],
+    });
   } catch (err) {
     next(err);
   }
