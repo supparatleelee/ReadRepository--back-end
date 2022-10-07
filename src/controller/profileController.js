@@ -1,4 +1,5 @@
 const { UserCollection, User, Book } = require('../models');
+const axios = require('axios');
 const AppError = require('../utility/appError');
 
 exports.getAllUserCollection = async (req, res, next) => {
@@ -20,13 +21,21 @@ exports.getAllUserCollection = async (req, res, next) => {
         { model: Book },
       ],
     });
-
     const totalCollection = allUserCollection.length;
+
+    const pureAllUserCollection = JSON.parse(JSON.stringify(allUserCollection));
+
+    for (const userCollection of pureAllUserCollection) {
+      const res = await axios.get(
+        `https://openlibrary.org/works/${userCollection.Book.bookOlid}.json`
+      );
+      userCollection.Book.bookData = res.data;
+    }
 
     res.status(200).json({
       getAllUserCollection: [
         { total: totalCollection },
-        { collectionLists: allUserCollection },
+        { collectionLists: pureAllUserCollection },
       ],
     });
   } catch (err) {
