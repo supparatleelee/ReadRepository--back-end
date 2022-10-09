@@ -14,4 +14,6 @@ router.post('/:olid/note', noteController.createNote);
 router.delete('/:olid/note', noteController.deleteNote);
 router.patch('/:olid/note', noteController.updateNote);
 
+router.patch('/:olid/readingActivity', bookController.readingActivity);
+
 module.exports = router;

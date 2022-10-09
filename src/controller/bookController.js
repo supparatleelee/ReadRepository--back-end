@@ -175,3 +175,29 @@ exports.deleteAddToList = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.readingActivity = async (req, res, next) => {
+  try {
+    const { currentPage, totalPage } = req.body;
+
+    const existOlid = await Book.findOne({
+      where: { bookOlid: req.params.olid },
+    });
+
+    const bookCollection = await UserCollection.findOne({
+      where: { userId: req.user.id, bookId: existOlid.id },
+    });
+
+    await UserCollection.update(
+      { onPage: currentPage, totalPage: totalPage },
+      { where: { id: bookCollection.id } }
+    );
+
+    const readingProgress =
+      (bookCollection.onPage / bookCollection.totalPage) * 100;
+
+    res.status(200).json({ readingProgress, bookCollection });
+  } catch (err) {
+    next(err);
+  }
+};
