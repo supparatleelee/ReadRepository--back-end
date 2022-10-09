@@ -36,9 +36,13 @@ exports.showBookInfo = async (req, res, next) => {
       });
 
       if (isAddedBookToList && !isCreatedNote) {
+        const readingProgress =
+          (isAddedBookToList.onPage / isAddedBookToList.totalPage) * 100;
+
         return res.status(200).json({
           bookInfo: bookInfo.data,
           bookStatus: isAddedBookToList.bookStatus,
+          bookReadingActivity: readingProgress,
         });
       }
 
@@ -49,10 +53,14 @@ exports.showBookInfo = async (req, res, next) => {
       }
 
       if (isAddedBookToList && isCreatedNote) {
+        const readingProgress =
+          (isAddedBookToList.onPage / isAddedBookToList.totalPage) * 100;
+
         return res.status(200).json({
           bookInfo: bookInfo.data,
           bookStatus: isAddedBookToList.bookStatus,
           userNote: isCreatedNote.note,
+          bookReadingActivity: readingProgress,
         });
       }
     }
