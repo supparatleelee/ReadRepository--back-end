@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const AppError = require('../utility/appError');
-const { User } = require('../models');
+const { User, sequelize, UserCollection, UserNote } = require('../models');
 
 const genToken = (payload) =>
   jwt.sign(payload, process.env.JWT_SECRET_KEY || 'secret_key', {
@@ -81,4 +81,35 @@ exports.login = async (req, res, next) => {
 
 exports.getMe = async (req, res) => {
   res.status(200).json({ user: req.user });
+};
+
+exports.deleteAccount = async (req, res, next) => {
+  let transaction;
+  try {
+    transaction = await sequelize.transaction();
+    const user = await User.findOne({ where: { id: req.user.id } });
+    if (!user) {
+      throw new AppError('User was not found', 400);
+    }
+
+    if (req.user.id !== user.id) {
+      throw new AppError('No permission to delete', 403);
+    }
+
+    await UserCollection.destroy({
+      where: { userId: user.id },
+      transaction: transaction,
+    });
+    await UserNote.destroy({
+      where: { userId: user.id },
+      transaction: transaction,
+    });
+    await user.destroy({ transaction: transaction });
+    await transaction.commit();
+
+    res.status(200).json({ msg: `Sucess delete user id ${req.user.id}` });
+  } catch (err) {
+    await transaction.rollback();
+    next(err);
+  }
 };
