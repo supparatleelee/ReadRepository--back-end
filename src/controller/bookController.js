@@ -47,9 +47,11 @@ exports.showBookInfo = async (req, res, next) => {
       }
 
       if (isCreatedNote && !isAddedBookToList) {
-        return res
-          .status(200)
-          .json({ bookInfo: bookInfo.data, userNote: isCreatedNote.note });
+        return res.status(200).json({
+          bookInfo: bookInfo.data,
+          userNote: isCreatedNote.note,
+          userNoteUpdatedAt: isCreatedNote.updatedAt,
+        });
       }
 
       if (isAddedBookToList && isCreatedNote) {
@@ -60,6 +62,7 @@ exports.showBookInfo = async (req, res, next) => {
           bookInfo: bookInfo.data,
           bookStatus: isAddedBookToList.bookStatus,
           userNote: isCreatedNote.note,
+          userNoteUpdatedAt: isCreatedNote.updatedAt,
           bookReadingActivity: readingProgress,
         });
       }
