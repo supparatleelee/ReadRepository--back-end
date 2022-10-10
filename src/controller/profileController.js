@@ -33,24 +33,9 @@ exports.getAllUserCollection = async (req, res, next) => {
       userCollection.Book.bookData = res.data;
     }
 
-    // const wantToReadTotal = await UserCollection.findAndCountAll({
-    //   where: { userId: req.params.userId, bookStatus: 'WANT_TO_READ' },
-    // });
-
-    // const currentlyReadingTotal = await UserCollection.findAndCountAll({
-    //   where: { userId: req.params.userId, bookStatus: 'CURRENTLY_READING' },
-    // });
-
-    // const readTotal = await UserCollection.findAndCountAll({
-    //   where: { userId: req.params.userId, bookStatus: 'READ' },
-    // });
-
     res.status(200).json({
       getAllUserCollection: [
         { total: totalCollection },
-        // { wantToReadTotal: wantToReadTotal },
-        // { currentlyReadingTotal: currentlyReadingTotal },
-        // { readTotal: readTotal },
         { collectionLists: pureAllUserCollection },
       ],
     });
